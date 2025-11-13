@@ -23,7 +23,7 @@ public class Supermarket {
     // Identificador único del supermercado. Es autogenerado y clave primaria.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Generación automática del ID.
-    private Integer id;
+    private Long id;
     // Nombre del supermercado. No puede estar vacío.
     @NotEmpty(message = "{msg.supermarket.name.notEmpty}")
     @Column(name = "name", nullable = false) // Define la columna correspondienteen la tabla.

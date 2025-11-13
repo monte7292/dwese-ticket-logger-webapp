@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.controllers;
 
-import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.dao.ProvinciaDAO;
+import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.entities.Region;
+import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.repositories.ProvinciaRepository;
 import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.entities.Provincia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.sql.SQLException;
+
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/provinces")
@@ -21,13 +23,13 @@ public class ProvinciaController {
 
     // DAO para gestionar las operaciones de las regiones en la base de datos
     @Autowired
-    private ProvinciaDAO provinciaDAO;
+    private ProvinciaRepository provinciaRepository;
 
     @GetMapping
     public String listProvincias(Model model) {
         logger.info("Solicitando la lista de todas las regiones...");
         List<Provincia> listProvincias = null;
-        listProvincias = provinciaDAO.listAllProvinces();
+        listProvincias = provinciaRepository.listAllProvinces();
         logger.info("Se han cargado {} regiones.", listProvincias.size());
         model.addAttribute("listProvincias", listProvincias); // Pasar la lista de regiones al modelo
         return "province"; // Nombre de la plantilla Thymeleaf a renderizar
@@ -42,15 +44,15 @@ public class ProvinciaController {
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam("id") int id, Model model) {
+    public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la región con ID {}", id);
         Provincia provincia = null;
-        provincia = provinciaDAO.getProvinceById(id);
+        Optional<Provincia> provinciaOpt = provinciaRepository.findById(id);
         if (provincia == null) {
             logger.warn("No se encontró la región con ID {}", id);
         }
         // Cambiado a 'province' para coincidir con la plantilla Thymeleaf
-        model.addAttribute("province", provincia);
+        model.addAttribute("province", provinciaOpt);
 
         return "province-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
@@ -58,13 +60,13 @@ public class ProvinciaController {
     @PostMapping("/insert")
     public String insertProvincia(@ModelAttribute("province") Provincia provincia, RedirectAttributes redirectAttributes) {
         logger.info("Insertando nueva región con código {}", provincia.getCode());
-        if (provinciaDAO.existsProvinceByCode(provincia.getCode())) {
+        if (provinciaRepository.existsProvinceByCode(provincia.getCode())) {
             logger.warn("El código de la región {} ya existe.", provincia.getCode());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de la provincia ya existe.");
             // Corregido: ruta de redirección debe ser /provinces/new
             return "redirect:/provinces/new";
         }
-        provinciaDAO.insertProvince(provincia);
+        provinciaRepository.save(provincia);
         logger.info("Región {} insertada con éxito.", provincia.getCode());
 
         return "redirect:/provinces"; // Redirigir a la lista de regiones
@@ -73,20 +75,20 @@ public class ProvinciaController {
     @PostMapping("/update")
     public String updateProvincia(@ModelAttribute("province") Provincia provincia, RedirectAttributes redirectAttributes) {
         logger.info("Actualizando provincia con ID {}", provincia.getId());
-        if (provinciaDAO.existsProvinceByCodeAndNotId(provincia.getCode(), provincia.getId())) {
+        if (provinciaRepository.existsProvinceByCodeAndNotId(provincia.getCode(), provincia.getId())) {
             logger.warn("El código de la región {} ya existe para otra región.", provincia.getCode());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de la provincia ya existe para otra región.");
             return "redirect:/provinces/edit?id=" + provincia.getId();
         }
-        provinciaDAO.updateProvince(provincia);
+        provinciaRepository.save(provincia);
         logger.info("Provincia con ID {} actualizada con éxito.", provincia.getId());
         return "redirect:/provinces"; // Redirigir a la lista de regiones
     }
 
     @PostMapping("/delete")
-    public String deleteProvincia(@RequestParam("id") int id, RedirectAttributes redirectAttributes) {
+    public String deleteProvincia(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         logger.info("Eliminando provincia con ID {}", id);
-        provinciaDAO.deleteProvince(id);
+        provinciaRepository.deleteById(id);
         logger.info("Provincia con ID {} eliminada con éxito.", id);
         return "redirect:/provinces"; // Redirigir a la lista de regiones
     }

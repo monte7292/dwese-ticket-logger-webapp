@@ -23,7 +23,7 @@ public class Location {
     // Identificador único de la ubicación. Es autogenerado y clave primaria.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
 
     // Dirección de la ubicación. No puede estar vacía.

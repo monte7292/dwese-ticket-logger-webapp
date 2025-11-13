@@ -35,7 +35,7 @@ public class Provincia {
     // Campo que almacena el identificador único de la provincia. Es autogeneradoy clave primaria.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
 
     // Campo que almacena el código de la provincia, normalmente una cadena corta que identifica la provincia.
