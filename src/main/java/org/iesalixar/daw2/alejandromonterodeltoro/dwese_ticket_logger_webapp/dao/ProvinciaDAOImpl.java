@@ -1,93 +1,127 @@
 package org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.dao;
 
 import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.entities.Provincia;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.entities.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.stereotype.Repository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ProvinciaDAOImpl implements ProvinciaDAO {
-
     // Logger para registrar eventos importantes en el DAO
     private static final Logger logger = LoggerFactory.getLogger(ProvinciaDAOImpl.class);
 
-    private final JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    // Inyección de JdbcTemplate
-    public ProvinciaDAOImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    /**
+     * Lista todas las provincias de la base de datos.
+     * @return Lista de provincias
+     */
+    @Override
+    public List<Provincia> listAllProvinces() {
+        logger.info("Listando todas las provincias de la base de datos.");
+        String query = "SELECT p FROM Provincia p";
+        List<Provincia> provincias = entityManager.createQuery(query, Provincia.class).getResultList();
+        logger.info("Recuperadas {} provincias de la base de datos.", provincias.size());
+        return provincias;
     }
 
+    /**
+     * Inserta una nueva provincia en la base de datos.
+     * @param provincia Provincia a insertar
+     */
     @Override
-    public List<Provincia> listAllProvincia() {
-        logger.info("Listing all provinces from the database.");
-        String sql = "SELECT * FROM provinces";
-        List<Provincia> provinces = jdbcTemplate.query(sql, new
-                BeanPropertyRowMapper<>(Provincia.class));
-        logger.info("Retrieved {} province from the database.", provinces.size());
-        return provinces;
+    public void insertProvince(Provincia provincia) {
+        logger.info("Insertando provincia con código: {} y nombre: {}", provincia.getCode(), provincia.getName());
+        entityManager.persist(provincia);
+        logger.info("Provincia insertada con ID: {}", provincia.getId());
     }
 
+    /**
+     * Actualiza una provincia existente en la base de datos.
+     * @param provincia Provincia a actualizar
+     */
     @Override
-    public void insertProvincia(Provincia province) {
-        logger.info("Inserting province with code: {} and name: {}", province.getCode(), province.getName());
-        String sql = "INSERT INTO provinces (code, name) VALUES (?, ?)";
-        int rowsAffected = jdbcTemplate.update(sql, province.getCode(), province.getName());
-        logger.info("Inserted province. Rows affected: {}", rowsAffected);
+    public void updateProvince(Provincia provincia) {
+        logger.info("Actualizando provincia con id: {}", provincia.getId());
+        entityManager.merge(provincia);
+        logger.info("Provincia actualizada con id: {}", provincia.getId());
     }
 
+    /**
+     * Elimina una provincia de la base de datos.
+     * @param id ID de la provincia a eliminar
+     */
     @Override
-    public void updateProvincia(Provincia province) {
-        logger.info("Updating province with id: {}", province.getId());
-        String sql = "UPDATE provinces SET code = ?, name = ? WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, province.getCode(), province.getName(), province.getId());
-        logger.info("Updated province. Rows affected: {}", rowsAffected);
-    }
-
-    @Override
-    public void deleteProvincia(int id) {
-        logger.info("Deleting province with id: {}", id);
-        String sql = "DELETE FROM provinces WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, id);
-        logger.info("Deleted province. Rows affected: {}", rowsAffected);
-    }
-
-    @Override
-    public Provincia getProvinciaById(int id) {
-        logger.info("Retrieving province by id: {}", id);
-        String sql = "SELECT * FROM provinces WHERE id = ?";
-        try {
-            Provincia province = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Provincia.class), id);
-            logger.info("Provincia retrieved: {} - {}", province.getCode(), province.getName());
-            return province;
-        } catch (Exception e) {
-            logger.warn("No province found with id: {}", id);
-            return null;
+    public void deleteProvince(int id) {
+        logger.info("Eliminando provincia con id: {}", id);
+        Provincia provincia = entityManager.find(Provincia.class, id);
+        if (provincia != null) {
+            entityManager.remove(provincia);
+            logger.info("Provincia eliminada con id: {}", id);
+        } else {
+            logger.warn("No se encontró la provincia con id: {}", id);
         }
     }
 
+    /**
+     * Obtiene una provincia por su ID.
+     * @param id ID de la provincia
+     * @return Provincia correspondiente al ID
+     */
     @Override
-    public boolean existsProvinciaByCode(String code) {
-        logger.info("Checking if province with code: {} exists", code);
-        String sql = "SELECT COUNT(*) FROM provinces WHERE UPPER(code) = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, code.toUpperCase());
+    public Provincia getProvinceById(int id) {
+        logger.info("Recuperando provincia por id: {}", id);
+        Provincia provincia = entityManager.find(Provincia.class, id);
+        if (provincia != null) {
+            logger.info("Provincia recuperada: {} - {}", provincia.getCode(), provincia.getName());
+        } else {
+            logger.warn("No se encontró la provincia con id: {}", id);
+        }
+        return provincia;
+    }
+
+    /**
+     * Verifica si una provincia con el código especificado ya existe en la base de datos.
+     * @param code el código de la provincia a verificar.
+     * @return true si una provincia con el código ya existe, false de lo contrario.
+     */
+    @Override
+    public boolean existsProvinceByCode(String code) {
+        logger.info("Verificando si existe una provincia con el código: {}", code);
+        String query = "SELECT COUNT(p) FROM Provincia p WHERE UPPER(p.code) = :code";
+        Long count = entityManager.createQuery(query, Long.class)
+                .setParameter("code", code.toUpperCase())
+                .getSingleResult();
         boolean exists = count != null && count > 0;
-        logger.info("Provinces with code: {} exists: {}", code, exists);
+        logger.info("Provincia con código: {} existe: {}", code, exists);
         return exists;
     }
 
+    /**
+     * Verifica si una provincia con el código especificado ya existe en la base de datos,
+     * excluyendo una provincia con un ID específico.
+     * @param code el código de la provincia a verificar.
+     * @param id el ID de la provincia a excluir de la verificación.
+     * @return true si una provincia con el código ya existe (y no es la provincia con el ID dado),
+     * false de lo contrario.
+     */
     @Override
-    public boolean existsProvinciaByCodeAndNotId(String code, long id) {
-        logger.info("Checking if province with code: {} exists excluding id: {}", code, id);
-        String sql = "SELECT COUNT(*) FROM provinces WHERE UPPER(code) = ? AND id != ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, code.toUpperCase(), id);
+    public boolean existsProvinceByCodeAndNotId(String code, int id) {
+        logger.info("Verificando si existe una provincia con el código: {} excluyendo id: {}", code, id);
+        String query = "SELECT COUNT(p) FROM Provincia p WHERE UPPER(p.code) = :code AND p.id != :id";
+        Long count = entityManager.createQuery(query, Long.class)
+                .setParameter("code", code.toUpperCase())
+                .setParameter("id", id)
+                .getSingleResult();
         boolean exists = count != null && count > 0;
-        logger.info("Provinces with code: {} exists excluding id {}: {}", code, id, exists);
+        logger.info("Provincia con código: {} existe excluyendo id {}: {}", code, id, exists);
         return exists;
     }
 }
-

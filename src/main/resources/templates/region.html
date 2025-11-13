@@ -22,6 +22,7 @@ Comunidades Autónomas')"></head>
             <th>ID</th>
             <th>Code</th>
             <th>Name</th>
+            <th>Imagen</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -30,6 +31,15 @@ Comunidades Autónomas')"></head>
             <td th:text="${region.id}"></td>
             <td th:text="${region.code}"></td>
             <td th:text="${region.name}"></td>
+            <!-- Mostrar la imagen si existe -->
+            <td>
+                <img th:if="${region.image != null}"
+                     th:src="@{'/uploads/' + ${region.image}}"
+                     alt="Imagen de la region"
+                     style="width: 100px; height: 100px; object-fit: cover;" />
+                <!-- Mostrar este texto si no existe la imagen -->
+                <span th:if="${region.image == null}" th:text="#{msg.region.noImage}"></span>
+            </td>
             <td>
                 <!-- Botón para editar -->
 
