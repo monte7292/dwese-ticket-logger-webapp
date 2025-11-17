@@ -29,7 +29,7 @@ public class ProvinciaController {
     public String listProvincias(Model model) {
         logger.info("Solicitando la lista de todas las regiones...");
         List<Provincia> listProvincias = null;
-        listProvincias = provinciaRepository.listAllProvinces();
+        listProvincias = provinciaRepository.findAll();
         logger.info("Se han cargado {} regiones.", listProvincias.size());
         model.addAttribute("listProvincias", listProvincias); // Pasar la lista de regiones al modelo
         return "province"; // Nombre de la plantilla Thymeleaf a renderizar
@@ -60,12 +60,12 @@ public class ProvinciaController {
     @PostMapping("/insert")
     public String insertProvincia(@ModelAttribute("province") Provincia provincia, RedirectAttributes redirectAttributes) {
         logger.info("Insertando nueva región con código {}", provincia.getCode());
-        if (provinciaRepository.existsProvinceByCode(provincia.getCode())) {
+        /*if (provinciaRepository.existsProvinceByCode(provincia.getCode())) {
             logger.warn("El código de la región {} ya existe.", provincia.getCode());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de la provincia ya existe.");
             // Corregido: ruta de redirección debe ser /provinces/new
             return "redirect:/provinces/new";
-        }
+        }*/
         provinciaRepository.save(provincia);
         logger.info("Región {} insertada con éxito.", provincia.getCode());
 
@@ -75,11 +75,11 @@ public class ProvinciaController {
     @PostMapping("/update")
     public String updateProvincia(@ModelAttribute("province") Provincia provincia, RedirectAttributes redirectAttributes) {
         logger.info("Actualizando provincia con ID {}", provincia.getId());
-        if (provinciaRepository.existsProvinceByCodeAndNotId(provincia.getCode(), provincia.getId())) {
+        /*if (provinciaRepository.existsProvinceByCodeAndNotId(provincia.getCode())) {
             logger.warn("El código de la región {} ya existe para otra región.", provincia.getCode());
             redirectAttributes.addFlashAttribute("errorMessage", "El código de la provincia ya existe para otra región.");
             return "redirect:/provinces/edit?id=" + provincia.getId();
-        }
+        }*/
         provinciaRepository.save(provincia);
         logger.info("Provincia con ID {} actualizada con éxito.", provincia.getId());
         return "redirect:/provinces"; // Redirigir a la lista de regiones

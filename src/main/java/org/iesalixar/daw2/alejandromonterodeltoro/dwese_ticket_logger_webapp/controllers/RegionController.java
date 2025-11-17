@@ -107,12 +107,13 @@ public class RegionController {
         if (result.hasErrors()) {
             return "region-form"; // Devuelve el formulario para mostrar loserrores de validación
         }
+        /*
         if (regionRepository.existsRegionByCode(region.getCode())) {
             logger.warn("El código de la región {} ya existe.", region.getCode());
             String errorMessage = messageSource.getMessage("msg.regioncontroller.insert.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/regions/new";
-        }
+        }*/
 
         // Guardar la imagen subida
         if (!imageFile.isEmpty()) {
@@ -140,12 +141,13 @@ public class RegionController {
         if (result.hasErrors()) {
             return "region-form"; // Devuelve el formulario para mostrar los errores de validación
         }
+        /*
         if (regionRepository.existsRegionByCodeAndNotId(region.getCode(), region.getId())) {
             logger.warn("El código de la región {} ya existe para otra región.", region.getCode());
             String errorMessage = messageSource.getMessage("msg.regioncontroller.update.codeExist", null, locale);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/regions/edit?id=" + region.getId();
-        }
+        }*/
 
         // Guardar la imagen subida
         if (!imageFile.isEmpty()) {
@@ -168,23 +170,11 @@ public class RegionController {
      * @param redirectAttributes Atributos para mensajes flash de redirección.
      * @return Redirección a la lista de regiones.
      */
-    @PostMapping("{id}/delete-image")
-    public String deleteRegion(@RequestParam("id") Long id, Region region ,RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando región con ID {}", id);
-        regionRepository.deleteById(id);
-        logger.info("Región con ID {} eliminada con éxito.", id);
-        return "redirect:/regions"; // Redirigir a la lista de regiones
-    }
 
     @PostMapping("/delete")
-    public String deleteImage(@RequestParam("id") Long id, Region region ,RedirectAttributes redirectAttributes) {
+    public String deleteRegion(@RequestParam("id") Long id ,RedirectAttributes redirectAttributes) {
         logger.info("Eliminando región con ID {}", id);
-
-        // Eliminar la imagen asociada, si existe
-        if (region.getImage() != null && !region.getImage().isEmpty()) {
-            fileStorageService.deleteFile(region.getImage());
-        }
-
+        regionRepository.deleteById(id);
         logger.info("Región con ID {} eliminada con éxito.", id);
         return "redirect:/regions"; // Redirigir a la lista de regiones
     }

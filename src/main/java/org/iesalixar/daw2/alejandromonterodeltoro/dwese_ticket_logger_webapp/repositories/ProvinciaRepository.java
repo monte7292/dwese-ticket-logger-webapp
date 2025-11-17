@@ -8,18 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface ProvinciaRepository extends JpaRepository<Provincia, Long> {
-    List<Provincia> findAll() ;
 
-    void save();
+    @Query("SELECT COUNT(r) > 0 FROM Provincia r WHERE r.code = :code")
+    boolean existsProvinceByCode(@Param("code") String code);
 
-    void deleteById(Long id);
-
-    Optional<Provincia> findById(Long id);
-
-    boolean existsProvinceByCode(String code);
-
-    @Query("SELECT COUNT(r) > 0 FROM Provincia r WHERE r.code = :code AND r.id != :id")
-    boolean existsProvinceByCodeAndNotId(@Param("code") String code, @Param("id") Long id);
-
-    List<Provincia> listAllProvinces();
 }
