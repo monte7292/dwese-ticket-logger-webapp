@@ -9,6 +9,8 @@
 <main class="container mt-5">
     <h1>Provincias</h1>
 
+    <div th:replace="province-filter :: provinceFilter(${search}, ${sort}, ${currentPage})"></div>
+
     <!-- Muestra un mensaje de error si hay algún problema -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
@@ -46,8 +48,35 @@
         </tbody>
     </table>
 
+    <!-- Sección de paginación -->
+    <nav aria-label="Page navigation" class="mt-4" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+
+            <!-- Botón "Anterior" -->
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a aria-label="Previous"
+                   class="page-link"
+                   th:href="${#strings.isEmpty(search)} ? @{/provinces(page=${currentPage - 1}, sort=${sort})} :  @{/provinces(page=${currentPage - 1}, search=${search}, sort=${sort})}">&laquo;</a>
+            </li>
+
+            <!-- Números de página -->
+            <li class="page-item" th:classappend="${i == currentPage} ? 'active'"
+                th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a class="page-link"
+                   th:href="${#strings.isEmpty(search)} ? @{/provinces(page=${i}, sort=${sort})} :  @{/provinces(page=${i}, search=${search}, sort=${sort})}"
+                   th:text="${i}"></a>
+            </li>
+
+            <!-- Botón "Siguiente" -->
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a aria-label="Next" class="page-link"
+                   th:href="${#strings.isEmpty(search)} ? @{/provinces(page=${currentPage + 1}, sort=${sort})} :  @{/provinces(page=${currentPage + 1}, search=${search}, sort=${sort})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
     <!-- Botón para añadir una nueva región -->
-    <a th:href="@{/provinces/new}" class="btn btn-success mt-3">Add New Region</a>
+    <a th:href="@{/provinces/new}" class="btn btn-success mt-3">Add New Provincia</a>
 
     <!-- Volver a la página principal -->
     <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>

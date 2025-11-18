@@ -7,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +30,28 @@ public class ProvinciaController {
     private ProvinciaRepository provinciaRepository;
 
     @GetMapping
-    public String listProvincias(Model model) {
-        logger.info("Solicitando la lista de todas las regiones...");
-        List<Provincia> listProvincias = null;
-        listProvincias = provinciaRepository.findAll();
-        logger.info("Se han cargado {} regiones.", listProvincias.size());
-        model.addAttribute("listProvincias", listProvincias); // Pasar la lista de regiones al modelo
+    public String listProvincias(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sort, Model model)
+    {
+        logger.info("Solicitando la lista de todas las regiones..." + search);
+        Pageable pageable = PageRequest.of(page - 1, 5, getSort(sort));
+        Page<Provincia> provincias;
+        int totalPages = 0;
+        if (search != null && !search.isBlank()) {
+            provincias = provinciaRepository.findByNameContainingIgnoreCase(search, pageable);
+            totalPages = (int) Math.ceil((double) provinciaRepository.countByNameContainingIgnoreCase(search) / 5);
+        } else {
+            provincias = provinciaRepository.findAll(pageable);
+            totalPages = (int) Math.ceil((double) provinciaRepository.count() / 5);
+        }
+        logger.info("Se han cargado {} provincias.", provincias.toList().size());
+        model.addAttribute("listProvincias", provincias.toList()); // Pasar la lista de regiones al modelo
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("search", search);
+        model.addAttribute("sort", sort);
         return "province"; // Nombre de la plantilla Thymeleaf a renderizar
     }
 
@@ -91,5 +111,19 @@ public class ProvinciaController {
         provinciaRepository.deleteById(id);
         logger.info("Provincia con ID {} eliminada con éxito.", id);
         return "redirect:/provinces"; // Redirigir a la lista de regiones
+    }
+
+    private Sort getSort(String sort) {
+        if (sort == null) {
+            return Sort.by("id").ascending();
+        }
+        return switch (sort) {
+            case "nameAsc" -> Sort.by("name").ascending();
+            case "nameDesc" -> Sort.by("name").descending();
+            case "codeAsc" -> Sort.by("code").ascending();
+            case "codeDesc" -> Sort.by("code").descending();
+            case "idDesc" -> Sort.by("id").descending();
+            default -> Sort.by("id").ascending();
+        };
     }
 }

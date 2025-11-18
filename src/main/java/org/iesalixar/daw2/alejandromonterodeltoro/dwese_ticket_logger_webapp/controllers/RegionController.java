@@ -7,15 +7,17 @@ import org.iesalixar.daw2.alejandromonterodeltoro.dwese_ticket_logger_webapp.ser
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -50,12 +52,28 @@ public class RegionController {
     regiones.
      */
     @GetMapping
-    public String listRegions(Model model) {
-        logger.info("Solicitando la lista de todas las regiones...");
-        List<Region> listRegions = null;
-        listRegions = regionRepository.findAll();
-        logger.info("Se han cargado {} regiones.", listRegions.size());
-        model.addAttribute("listRegions", listRegions); // Pasar la lista de regiones al modelo
+    public String listRegions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sort, Model model)
+    {
+        logger.info("Solicitando la lista de todas las regiones..." + search);
+        Pageable pageable = PageRequest.of(page - 1, 5, getSort(sort));
+        Page<Region> regions;
+        int totalPages = 0;
+        if (search != null && !search.isBlank()) {
+            regions = regionRepository.findByNameContainingIgnoreCase(search, pageable);
+            totalPages = (int) Math.ceil((double) regionRepository.countByNameContainingIgnoreCase(search) / 5);
+        } else {
+            regions = regionRepository.findAll(pageable);
+            totalPages = (int) Math.ceil((double) regionRepository.count() / 5);
+        }
+        logger.info("Se han cargado {} regiones.", regions.toList().size());
+        model.addAttribute("listRegions", regions.toList()); // Pasar la lista de regiones al modelo
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("search", search);
+        model.addAttribute("sort", sort);
         return "region"; // Nombre de la plantilla Thymeleaf a renderizar
     }
 
@@ -177,5 +195,19 @@ public class RegionController {
         regionRepository.deleteById(id);
         logger.info("Región con ID {} eliminada con éxito.", id);
         return "redirect:/regions"; // Redirigir a la lista de regiones
+    }
+
+    private Sort getSort(String sort) {
+        if (sort == null) {
+            return Sort.by("id").ascending();
+        }
+        return switch (sort) {
+            case "nameAsc" -> Sort.by("name").ascending();
+            case "nameDesc" -> Sort.by("name").descending();
+            case "codeAsc" -> Sort.by("code").ascending();
+            case "codeDesc" -> Sort.by("code").descending();
+            case "idDesc" -> Sort.by("id").descending();
+            default -> Sort.by("id").ascending();
+        };
     }
 }
