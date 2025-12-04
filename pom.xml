@@ -88,7 +88,20 @@
             <artifactId>hibernate-core</artifactId>
             <version>6.6.34.Final</version>
         </dependency>
+
+        <!-- Dependencia de Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+            <version>3.1.3.RELEASE</version> <!--Debe coincidir con la versión deThymeleaf -->
+        </dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>
