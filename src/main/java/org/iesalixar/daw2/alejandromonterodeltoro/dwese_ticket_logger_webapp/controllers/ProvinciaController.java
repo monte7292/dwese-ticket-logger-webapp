@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -105,6 +106,7 @@ public class ProvinciaController {
         return "redirect:/provinces"; // Redirigir a la lista de regiones
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete")
     public String deleteProvincia(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         logger.info("Eliminando provincia con ID {}", id);

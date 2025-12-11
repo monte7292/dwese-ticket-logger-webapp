@@ -58,18 +58,7 @@ public class Provincia {
     //@ManyToOne(fetch = FetchType.LAZY) // Relación de muchas provincias a una región.
     //@JoinColumn(name = "region_id", nullable = false) // Clave foránea en la tabla provinces que referencia a la tabla regions.
     //private Region region;
-    /**
-     * Constructor que excluye el campo `id`. Se utiliza para crear instancias
-     de `Province`
-     * cuando el `id` aún no se ha generado (por ejemplo, antes de insertarla en
-     la base de datos).
-     * @param code Código de la provincia.
-     * @param name Nombre de la provincia.
-     * @param region La región a la que pertenece la provincia.
-     */
 
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Location> locations;
 
     public Provincia(String code, String name) {
         this.code = code;

@@ -2,35 +2,47 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head ('Ticket Logger - Login')"></head>
 <body class="d-flex flex-column h-100">
-<!-- Fragmento del header -->
+
 <header th:replace="fragments/header :: header"></header>
-<!-- Contenido principal con el formulario de login -->
-<main class="flex-shrink-0">
+
+<main class="flex-shrink-0 mt-5">
     <div class="container">
-        <h1 class="mt-5 text-center" th:text="#{spring.security.ui.login.title}"></h1>
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form th:action="@{/login}" method="post" class="form-signin">
-                    <!-- Campo de usuario -->
-                    <div class="form-group mb-3">
-                        <label th:for="username"
-                               th:text="#{spring.security.ui.login.username}"></label>
-                        <input type="text" id="username" name="username"
-                               class="form-control" th:placeholder="#{spring.security.ui.login.username}"
-                               required autofocus>
-                    </div>
-                    <!-- Campo de contraseña -->
-                    <div class="form-group mb-3">
-                        <label th:for="password"
-                               th:text="#{spring.security.ui.login.password}"></label>
-                        <input type="password" id="password" name="password"
-                               class="form-control" th:placeholder="#{spring.security.ui.login.password}"
-                               required>
-                    </div>
-                    <!-- Botón de envío -->
-                    <button class="btn btn-primary w-100" type="submit"
-                            th:text="#{spring.security.ui.login.submit}"></button>
-                </form>
+            <div class="col-md-6 text-center">
+                <h1 class="mt-5 mb-4" th:text="#{spring.security.ui.login.title}">Login</h1>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4"> <form th:action="@{/login}" method="post" class="form-signin">
+
+                <div class="form-floating mb-3">
+                    <input type="text" id="username" name="username" class="form-control"
+                           th:placeholder="#{spring.security.ui.login.username}" required autofocus>
+                    <label for="username" th:text="#{spring.security.ui.login.username}">Usuario</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" id="password" name="password" class="form-control"
+                           th:placeholder="#{spring.security.ui.login.password}" required>
+                    <label for="password" th:text="#{spring.security.ui.login.password}">Contraseña</label>
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100" type="submit"
+                        th:text="#{spring.security.ui.login.submit}">Entrar</button>
+            </form>
+
+                <div class="d-flex align-items-center my-3">
+                    <hr class="flex-grow-1">
+                    <span class="mx-2 text-muted small text-uppercase">O entra con</span>
+                    <hr class="flex-grow-1">
+                </div>
+
+                <a href="/oauth2/authorization/github" class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-github"></i>
+                    <span>GitHub</span>
+                </a>
+
             </div>
         </div>
     </div>
