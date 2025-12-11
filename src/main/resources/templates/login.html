@@ -14,23 +14,52 @@
         </div>
 
         <div class="row justify-content-center">
-            <div class="col-md-5 col-lg-4"> <form th:action="@{/login}" method="post" class="form-signin">
+            <div class="col-md-5 col-lg-4">
 
-                <div class="form-floating mb-3">
-                    <input type="text" id="username" name="username" class="form-control"
-                           th:placeholder="#{spring.security.ui.login.username}" required autofocus>
-                    <label for="username" th:text="#{spring.security.ui.login.username}">Usuario</label>
+                <!-- MENSAJE DE ERROR GENERAL -->
+                <div th:if="${param.error}" class="alert alert-danger text-center">
+                    Usuario o contraseña incorrectos
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="password" id="password" name="password" class="form-control"
-                           th:placeholder="#{spring.security.ui.login.password}" required>
-                    <label for="password" th:text="#{spring.security.ui.login.password}">Contraseña</label>
-                </div>
+                <form th:action="@{/login}" method="post" class="form-signin">
 
-                <button class="btn btn-primary btn-lg w-100" type="submit"
-                        th:text="#{spring.security.ui.login.submit}">Entrar</button>
-            </form>
+                    <!-- USERNAME -->
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               id="username"
+                               name="username"
+                               class="form-control"
+                               th:classappend="${param.error} ? 'is-invalid' : ''"
+                               th:placeholder="#{spring.security.ui.login.username}"
+                               required autofocus>
+                        <label for="username" th:text="#{spring.security.ui.login.username}">Usuario</label>
+
+                        <div class="invalid-feedback">
+                            Usuario incorrecto
+                        </div>
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="form-floating mb-3">
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               class="form-control"
+                               th:classappend="${param.error} ? 'is-invalid' : ''"
+                               th:placeholder="#{spring.security.ui.login.password}"
+                               required>
+                        <label for="password" th:text="#{spring.security.ui.login.password}">Contraseña</label>
+
+                        <div class="invalid-feedback">
+                            Contraseña incorrecta
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg w-100" type="submit"
+                            th:text="#{spring.security.ui.login.submit}">
+                        Entrar
+                    </button>
+                </form>
 
                 <div class="d-flex align-items-center my-3">
                     <hr class="flex-grow-1">

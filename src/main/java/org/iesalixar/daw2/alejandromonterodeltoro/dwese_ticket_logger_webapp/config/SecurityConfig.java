@@ -44,9 +44,10 @@ public class SecurityConfig {
                 .formLogin(form -> {
                     logger.debug("Configurando formulario de inicio de sesión");
                     form
-                            .loginPage("/login")        // Página personalizada de login
-                            .defaultSuccessUrl("/")     // Redirige al inicio después del login
-                            .permitAll();               // Permite acceso a la página de login a todos los usuarios
+                            .loginPage("/login")              // Página personalizada de login
+                            .defaultSuccessUrl("/")           // Redirige al inicio después del login
+                            .failureUrl("/login?error=true")  // Si falla al iniciar sesion
+                            .permitAll();                     // Permite acceso a la página de login a todos
                 })
                 .oauth2Login(oauth2 -> {
                     logger.debug("Configurando login con OAuth2");
