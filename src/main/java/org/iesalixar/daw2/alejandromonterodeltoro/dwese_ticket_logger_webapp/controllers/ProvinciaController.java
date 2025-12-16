@@ -68,15 +68,15 @@ public class ProvinciaController {
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la región con ID {}", id);
-        Provincia provincia = null;
         Optional<Provincia> provinciaOpt = provinciaRepository.findById(id);
-        if (provincia == null) {
+        
+        if (provinciaOpt.isPresent()) {
+            model.addAttribute("province", provinciaOpt.get());
+            return "province-form";
+        } else {
             logger.warn("No se encontró la región con ID {}", id);
+            return "redirect:/provinces";
         }
-        // Cambiado a 'province' para coincidir con la plantilla Thymeleaf
-        model.addAttribute("province", provinciaOpt);
-
-        return "province-form"; // Nombre de la plantilla Thymeleaf para el formulario
     }
 
     @PostMapping("/insert")

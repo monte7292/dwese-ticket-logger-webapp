@@ -21,6 +21,11 @@
                     Usuario o contraseña incorrectos
                 </div>
 
+                <!-- MENSAJE DE REGISTRO EXITOSO -->
+                <div th:if="${param.registered}" class="alert alert-success text-center">
+                    <span th:text="#{msg.login.registered}">Registro completado con éxito. Por favor, inicie sesión.</span>
+                </div>
+
                 <form th:action="@{/login}" method="post" class="form-signin">
 
                     <!-- USERNAME -->
@@ -71,6 +76,10 @@
                     <i class="bi bi-github"></i>
                     <span>GitHub</span>
                 </a>
+
+                <div class="text-center mt-3">
+                    <a th:href="@{/register}" th:text="#{msg.login.registerLink}">¿No tienes cuenta? Regístrate aquí</a>
+                </div>
 
             </div>
         </div>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Ticket Logger - Registration')"></head>
+<body class="d-flex flex-column h-100">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="flex-shrink-0 mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <h1 class="mt-5 mb-4" th:text="#{msg.register.title}">Registration</h1>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+
+                <form th:action="@{/register}" th:object="${userRegistrationDTO}" method="post" class="form-signin">
+
+                    <!-- USERNAME -->
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               id="username"
+                               th:field="*{username}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                               th:placeholder="#{msg.register.username}"
+                               required autofocus>
+                        <label for="username" th:text="#{msg.register.username}">Username</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="form-floating mb-3">
+                        <input type="password"
+                               id="password"
+                               th:field="*{password}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                               th:placeholder="#{msg.register.password}"
+                               required>
+                        <label for="password" th:text="#{msg.register.password}">Password</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="form-floating mb-3">
+                        <input type="password"
+                               id="confirmPassword"
+                               th:field="*{confirmPassword}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                               th:placeholder="#{msg.register.confirmPassword}"
+                               required>
+                        <label for="confirmPassword" th:text="#{msg.register.confirmPassword}">Confirm Password</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+
+                    <!-- FIRST NAME -->
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               id="firstName"
+                               th:field="*{firstName}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''"
+                               th:placeholder="#{msg.register.firstName}"
+                               required>
+                        <label for="firstName" th:text="#{msg.register.firstName}">First Name</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                    </div>
+
+                    <!-- LAST NAME -->
+                    <div class="form-floating mb-3">
+                        <input type="text"
+                               id="lastName"
+                               th:field="*{lastName}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''"
+                               th:placeholder="#{msg.register.lastName}"
+                               required>
+                        <label for="lastName" th:text="#{msg.register.lastName}">Last Name</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg w-100" type="submit"
+                            th:text="#{msg.register.submit}">
+                        Register
+                    </button>
+                </form>
+
+                <div class="d-flex align-items-center my-3">
+                    <hr class="flex-grow-1">
+                </div>
+
+                <div class="text-center">
+                    <a th:href="@{/login}" th:text="#{msg.register.loginLink}">Already have an account? Sign in</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

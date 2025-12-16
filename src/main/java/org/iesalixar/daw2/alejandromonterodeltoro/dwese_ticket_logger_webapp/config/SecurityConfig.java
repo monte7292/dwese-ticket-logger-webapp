@@ -35,8 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     logger.debug("Configurando autorización de solicitudes HTTP");
                             auth
-                                    .requestMatchers("/", "/hello").permitAll()
-                                    .requestMatchers("/admin", "/provinces/**","/regions").hasRole("ADMIN")// Solo ADMIN
+                                    .requestMatchers("/", "/hello", "/register", "/login").permitAll()
+                                    .requestMatchers("/admin", "/provinces","/regions").hasRole("ADMIN")// Solo ADMIN
                                     .requestMatchers("/products").hasRole("MANAGER") // Solo MANAGER
                                     .requestMatchers("/tickets").hasRole("USER")
                                     .anyRequest().authenticated(); //Cualquier otra solicitud requiere autenticación
@@ -45,7 +45,7 @@ public class SecurityConfig {
                     logger.debug("Configurando formulario de inicio de sesión");
                     form
                             .loginPage("/login")              // Página personalizada de login
-                            .defaultSuccessUrl("/")           // Redirige al inicio después del login
+                            .defaultSuccessUrl("/", true)           // Redirige al inicio después del login
                             .failureUrl("/login?error=true")  // Si falla al iniciar sesion
                             .permitAll();                     // Permite acceso a la página de login a todos
                 })

@@ -53,8 +53,10 @@
                 <ul class="navbar-nav ms-3 mb-2 mb-md-0">
 
                     <!-- Login si NO autenticado -->
-                    <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/login}">Login</a>
+                    <li class="nav-item d-flex align-items-center" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/login}" th:text="#{spring.security.ui.login.title}">Login</a>
+                        <span class="text-white-50 mx-1">|</span>
+                        <a class="nav-link" th:href="@{/register}" th:text="#{msg.register.submit}">Register</a>
                     </li>
 
                     <!-- Logout si autenticado -->
