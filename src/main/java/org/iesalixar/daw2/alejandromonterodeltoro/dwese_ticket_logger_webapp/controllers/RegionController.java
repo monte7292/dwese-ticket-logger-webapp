@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -191,9 +192,17 @@ public class RegionController {
 
     @PostMapping("/delete")
     public String deleteRegion(@RequestParam("id") Long id ,RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando región con ID {}", id);
-        regionRepository.deleteById(id);
-        logger.info("Región con ID {} eliminada con éxito.", id);
+        try {
+            logger.info("Eliminando región con ID {}", id);
+            regionRepository.deleteById(id);
+            logger.info("Región con ID {} eliminada con éxito.", id);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Error al eliminar la región con ID {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "No se puede eliminar la región porque tiene provincias asociadas.");
+        } catch (Exception e) {
+            logger.error("Error inesperado al eliminar la región con ID {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Ocurrió un error inesperado al intentar eliminar la región.");
+        }
         return "redirect:/regions"; // Redirigir a la lista de regiones
     }
 
@@ -211,3 +220,4 @@ public class RegionController {
         };
     }
 }
+

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -109,9 +110,17 @@ public class ProvinciaController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete")
     public String deleteProvincia(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando provincia con ID {}", id);
-        provinciaRepository.deleteById(id);
-        logger.info("Provincia con ID {} eliminada con éxito.", id);
+        try {
+            logger.info("Eliminando provincia con ID {}", id);
+            provinciaRepository.deleteById(id);
+            logger.info("Provincia con ID {} eliminada con éxito.", id);
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Error al eliminar la provincia con ID {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "No se puede eliminar la provincia porque tiene ubicaciones asociadas.");
+        } catch (Exception e) {
+            logger.error("Error inesperado al eliminar la provincia con ID {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Ocurrió un error inesperado al intentar eliminar la provincia.");
+        }
         return "redirect:/provinces"; // Redirigir a la lista de regiones
     }
 

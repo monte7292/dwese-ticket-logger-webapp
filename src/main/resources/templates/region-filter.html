@@ -1,19 +1,11 @@
 <!-- Sección de filtrado -->
-<div th:fragment="regionFilter(searchName, searchCode, sort, currentPage)">
+<div th:fragment="regionFilter(search, sort, currentPage)">
     <form class="row g-3 mt-3 mb-3" method="get" th:action="@{/regions}">
 
         <!-- Campo búsqueda -->
-        <div class="col-md-3">
-            <input class="form-control" name="searchName"
-                   placeholder="Filtrar nombre"
-                   th:value="${search}"
-                   type="text">
-        </div>
-
-        <!-- Campo búsqueda -->
-        <div class="col-md-2">
-            <input class="form-control" name="searchCode"
-                   placeholder="Filtrar codigo"
+        <div class="col-md-5">
+            <input class="form-control" name="search"
+                   placeholder="Buscar por nombre..."
                    th:value="${search}"
                    type="text">
         </div>

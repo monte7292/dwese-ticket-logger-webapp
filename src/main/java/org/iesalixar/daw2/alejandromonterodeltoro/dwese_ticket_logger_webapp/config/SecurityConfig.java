@@ -37,7 +37,7 @@ public class SecurityConfig {
                             auth
                                     .requestMatchers("/", "/hello").permitAll()
                                     .requestMatchers("/admin", "/provinces/**","/regions").hasRole("ADMIN")// Solo ADMIN
-                                    .requestMatchers("/supermarkets", "/locations", "/categories").hasRole("MANAGER") // Solo MANAGER
+                                    .requestMatchers("/products").hasRole("MANAGER") // Solo MANAGER
                                     .requestMatchers("/tickets").hasRole("USER")
                                     .anyRequest().authenticated(); //Cualquier otra solicitud requiere autenticación
                 })
